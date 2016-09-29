@@ -1,4 +1,5 @@
 package core;
+
 /*
  * Author: Shaun Porter
  * Date: 29/09/2016
@@ -13,7 +14,9 @@ import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.Stage;
+import javafx.util.converter.NumberStringConverter;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
@@ -41,41 +44,76 @@ public class Core extends Application {
 
 		layoutTop = new HBox(10);
 		layoutTop.getChildren().addAll(tf_input01, tf_input02, tf_input03, tf_input04, btn_show);
-
-		btn_show.setOnAction(e -> buttonAction()); // Using Lambda to skip uneccesary code. Bad Coding?
-
-		root.setTop(layoutTop); 
 		
+		btn_show.setDisable(true);
+		setupListeners();
+		
+
+		root.setTop(layoutTop);
+
 		scene = new Scene(root, 300, 300);
 		window.setScene(scene);
 		window.show();
 	}
-	
+
 	// Sets up JavaFX Objects away from the rest of the code.
 	public static void initalizeObjects() {
 		tf_input01 = new TextField();
+		tf_input01.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
+
 		tf_input02 = new TextField();
+		tf_input02.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
+
 		tf_input03 = new TextField();
+		tf_input03.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
+
 		tf_input04 = new TextField();
+		tf_input04.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
+
 		btn_show = new Button("Go!");
 		root = new BorderPane();
 		System.out.println("Objects initalized");
 	}
-	// Sets up the PieChart by by using user input stored in variables and then adds it to the layout.
+
+	// Sets up the PieChart by by using user input stored in variables and then
+	// adds it to the layout.
 	public static void buttonAction() {
+		
+		
 		piedata01 = Integer.parseInt(tf_input01.getText());
 		piedata02 = Integer.parseInt(tf_input02.getText());
 		piedata03 = Integer.parseInt(tf_input03.getText());
 		piedata04 = Integer.parseInt(tf_input04.getText());
 
 		pieChartData = FXCollections.observableArrayList(new PieChart.Data(Integer.toString(piedata01), piedata01),
-				new PieChart.Data(Integer.toString(piedata02), piedata02), new PieChart.Data(Integer.toString(piedata03), piedata03),
+				new PieChart.Data(Integer.toString(piedata02), piedata02),
+				new PieChart.Data(Integer.toString(piedata03), piedata03),
 				new PieChart.Data(Integer.toString(piedata04), piedata04));
 
 		chart = new PieChart(pieChartData);
 
 		root.setCenter(chart);
 
+	}
+	
+	public static void setupListeners(){
+		btn_show.setOnAction(e -> buttonAction()); 
+		tf_input01.setOnKeyReleased(e -> isValidInput());
+		tf_input02.setOnKeyReleased(e -> isValidInput());
+		tf_input03.setOnKeyReleased(e -> isValidInput());
+		tf_input04.setOnKeyReleased(e -> isValidInput());
+
+	}
+	
+	public static void isValidInput(){
+		if(!tf_input01.getText().isEmpty() && !tf_input02.getText().isEmpty() && !tf_input03.getText().isEmpty() && !tf_input04.getText().isEmpty() ){
+			btn_show.setDisable(false);
+			System.out.println("Disable");
+		}
+		else{
+			btn_show.setDisable(true);
+			System.out.println("Enabled");
+		}
 	}
 
 }
